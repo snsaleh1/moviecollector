@@ -15,5 +15,38 @@
     <a href="{% url 'movies_delete' movie.id %}">Delete</a>
   </div>
 </div>
+<div class="col s6">
+  <form action="{% url 'add_viewing' movie.id %}" method="post">
+    {% csrf_token %}
+    {{ viewing_form.as_p }}
+    <input type="submit" class="btn" value="Add Viewing">
+  </form>
+  <table class="striped">
+    <table class="striped">
+      <thead>
+        <tr><th>Date</th><th>Snack</th></tr>
+      </thead>
+      <tbody>
+        {% for viewing in movie.viewing_set.all %}
+          <tr>
+            <td>{{viewing.date}}</td>
+            <td>{{viewing.get_snack_display}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+var dateEl = document.getElementById('id_date');
+M.Datepicker.init(dateEl, {
+    format: 'yyyy-mm-dd',
+    defaultDate: new Date(),
+    setDefaultDate: true,
+    autoClose: true
+});
+var selectEl = document.getElementById('id_snack');
+M.FormSelect.init(selectEl);
+</script>
 
 {% endblock %}
