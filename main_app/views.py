@@ -28,7 +28,7 @@ def about(request):
   return render(request, 'about.html')
 
 def movies_index(request):
-  movies = Movie.objects.all()
+  movie = Movie.objects.all()
   return render(request, 'movies/index.html', { 'movies': movies })
 
 def movies_detail(request, movie_id):
@@ -36,7 +36,7 @@ def movies_detail(request, movie_id):
   viewing_form = ViewingForm()
   return render(request, 'movies/detail.html', { 'movie': movie, 'viewing_form': viewing_form })
 
-def add_viewing(request, cat_id):
+def add_viewing(request, movie_id):
     form = ViewingForm(request.POST)
     # validate the form
     if form.is_valid():
