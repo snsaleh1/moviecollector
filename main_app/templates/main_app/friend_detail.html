@@ -1,0 +1,20 @@
+{% extends 'home.html' %}
+{% block content %}
+
+<h1>Friend Details</h1>
+
+<div class="row">
+  <div class="col s6 col-offset-3">
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title">{{ friend.name }}</span>
+        <p>Bringing: {{ friend.bringing }}</p>
+      </div>
+      <div class="card-action">
+        <a href="{% url 'friend_update' friend.id %}">Edit</a>
+        <a href="{% url 'friend_delete' friend.id %}">Delete</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
