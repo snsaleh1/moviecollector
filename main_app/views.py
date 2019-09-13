@@ -1,51 +1,51 @@
 from django.shortcuts import render, redirect
-from django.views.generic.edit import CreateView
-from .models import Movie, Friend, Photo
-from .forms import ViewingForm
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView
+
 
 import boto3
 import uuid
 
+from .forms import ViewingForm
+from .models import Movie, Friend, Photo
 # Add the following import
-from django.http import HttpResponse
 
 S3_BASE_URL = 'https://s3-us-west-1.amazonaws.com/'
 BUCKET = 'moviecollector-cns'
 
-
 class MovieDelete(DeleteView):
-  model = Movie
-  success_url = '/movies/'
+    model = Movie
+    success_url = '/movies/'
 
 class MovieUpdate(UpdateView):
-  model = Movie
-  # Let's disallow the renaming of a cat by excluding the name field!
-  fields = ['year', 'rating', 'quote']
+    model = Movie
+    fields = ['year', 'rating', 'quote']
 
 class MovieCreate(CreateView):
-  model = Movie
-  fields = '__all__'
+    model = Movie
+    fields = ['name', 'year', 'rating', 'quote']
+    success_url = '/movies/'
+
 
 # Define the home view
 def home(request):
-  return render(request, 'home.html')
+    return render(request, 'home.html')
 
 def about(request):
-  return render(request, 'about.html')
+    return render(request, 'about.html')
 
 def movies_index(request):
-  movies = Movie.objects.all()
-  return render(request, 'movies/index.html', { 'movies': movies })
+    movies = Movie.objects.all()
+    return render(request, 'movies/index.html', { 'movies': movies })
 
 def movies_detail(request, movie_id):
-  movie = Movie.objects.get(id=movie_id)
-  friends_movie_doesnt_have = Friend.objects.exclude(id__in = movie.friends.all().values_list('id'))
-  viewing_form = ViewingForm()
-  return render(request, 'movies/detail.html', { 
-      'movie': movie, 'viewing_form': viewing_form,
-      'friends': friends_movie_doesnt_have
-  })
+    movie = Movie.objects.get(id=movie_id)
+    friends_movie_doesnt_have = Friend.objects.exclude(id__in = movie.friends.all().values_list('id'))
+    viewing_form = ViewingForm()
+    return render(request, 'movies/detail.html', { 
+        'movie': movie, 'viewing_form': viewing_form,
+        'friends': friends_movie_doesnt_have
+    })
 
 def add_viewing(request, movie_id):
     form = ViewingForm(request.POST)
@@ -59,12 +59,35 @@ def add_viewing(request, movie_id):
         return redirect('detail', movie_id=movie_id)
 
 def assoc_friend(request, movie_id, friend_id):
-  Movie.objects.get(id=movie_id).friends.add(friend_id)
-  return redirect('detail', movie_id=movie_id)
+    Movie.objects.get(id=movie_id).friends.add(friend_id)
+    return redirect('detail', movie_id=movie_id)
 
 def unassoc_friend(request, movie_id, friend_id):
-  Movie.objects.get(id=movie_id).friends.remove(friend_id)
-  return redirect('detail', movie_id=movie_id)
+    Movie.objects.get(id=movie_id).friends.remove(friend_id)
+    return redirect('detail', movie_id=movie_id)
+
+
+class FriendList(ListView):
+    model = Friend
+
+class FriendDetail(DetailView):
+    model = Friend
+
+class FriendCreate(CreateView):
+    model = Friend
+    fields = '__all__'
+    success_url = '/friends/'
+
+
+class FriendUpdate(UpdateView):
+    model = Friend
+    fields = ['name', 'bringing']
+    success_url = '/friends/'
+
+
+class FriendDelete(DeleteView):
+    model = Friend
+    success_url = '/friends/'
 
 def add_photo(request, movie_id):
     # photo-file will be the "name" attribute on the <input type="file">
@@ -84,21 +107,3 @@ def add_photo(request, movie_id):
         except:
             print('An error occurred uploading file to S3')
     return redirect('detail', movie_id=movie_id)
-
-# class FriendList(ListView):
-#   model = Friend
-
-# class FriendDetail(DetailView):
-#   model = Friend
-
-class FriendCreate(CreateView):
-  model = Friend
-  fields = '__all__'
-
-class FriendUpdate(UpdateView):
-  model = Friend
-  fields = ['name', 'color']
-
-class FriendDelete(DeleteView):
-  model = Friend
-  success_url = '/friends/'
