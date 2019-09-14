@@ -26,6 +26,7 @@ class Movie(models.Model):  # Note that parens are optional if not inheriting fr
     name = models.CharField(max_length=100)
     year = models.IntegerField()
     rating = models.CharField(max_length=25)
+    description = models.TextField(max_length=300)
     quote = models.TextField(max_length=250)
     friends = models.ManyToManyField(Friend)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

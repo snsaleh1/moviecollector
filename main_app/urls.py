@@ -18,4 +18,5 @@ urlpatterns = [
     path('friends/create/', views.FriendCreate.as_view(), name='friends_create'),
     path('friends/<int:pk>/update/', views.FriendUpdate.as_view(), name='friend_update'),
     path('friends/<int:pk>/delete/', views.FriendDelete.as_view(), name='friend_delete'),
+    path('accounts/signup', views.signup, name='signup'),
 ]

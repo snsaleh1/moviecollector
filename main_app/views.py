@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import ListView, DetailView
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
 
 
 import boto3
@@ -13,18 +16,36 @@ from .models import Movie, Friend, Photo
 S3_BASE_URL = 'https://s3-us-west-1.amazonaws.com/'
 BUCKET = 'moviecollector-cns'
 
+def signup(request):
+    error_message = ''
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('index')
+        else:
+            error_message = 'Invalid sign up - try again'
+    form = UserCreationForm()
+    context = {'form': form, 'error_message': error_message}
+    return render(request, 'registration/signup.html', context)
+
 class MovieDelete(DeleteView):
     model = Movie
     success_url = '/movies/'
 
 class MovieUpdate(UpdateView):
     model = Movie
-    fields = ['year', 'rating', 'quote']
+    fields = ['year', 'rating', 'description' 'quote']
 
 class MovieCreate(CreateView):
     model = Movie
-    fields = ['name', 'year', 'rating', 'quote']
+    fields = ['name', 'year', 'rating', 'description', 'quote']
     success_url = '/movies/'
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
 
 # Define the home view
@@ -34,10 +55,12 @@ def home(request):
 def about(request):
     return render(request, 'about.html')
 
+@login_required
 def movies_index(request):
-    movies = Movie.objects.all()
+    movies = Movie.objects.filter(user=request.user)
     return render(request, 'movies/index.html', { 'movies': movies })
 
+@login_required
 def movies_detail(request, movie_id):
     movie = Movie.objects.get(id=movie_id)
     friends_movie_doesnt_have = Friend.objects.exclude(id__in = movie.friends.all().values_list('id'))
@@ -47,6 +70,7 @@ def movies_detail(request, movie_id):
         'friends': friends_movie_doesnt_have
     })
 
+@login_required
 def add_viewing(request, movie_id):
     form = ViewingForm(request.POST)
     # validate the form
@@ -58,10 +82,12 @@ def add_viewing(request, movie_id):
         new_viewing.save()
         return redirect('detail', movie_id=movie_id)
 
+@login_required
 def assoc_friend(request, movie_id, friend_id):
     Movie.objects.get(id=movie_id).friends.add(friend_id)
     return redirect('detail', movie_id=movie_id)
 
+@login_required
 def unassoc_friend(request, movie_id, friend_id):
     Movie.objects.get(id=movie_id).friends.remove(friend_id)
     return redirect('detail', movie_id=movie_id)
@@ -89,6 +115,7 @@ class FriendDelete(DeleteView):
     model = Friend
     success_url = '/friends/'
 
+@login_required
 def add_photo(request, movie_id):
     # photo-file will be the "name" attribute on the <input type="file">
     photo_file = request.FILES.get('photo-file', None)
