@@ -2,6 +2,9 @@ body {
     display: flex;
     min-height: 100vh;
     flex-direction: column;
+    background: url("https://thumbs.dreamstime.com/b/movie-theatre-screen-red-seats-backgound-movie-theater-screen-backgound-d-illustration-110914549.jpg");
+    background-size: cover;
+    padding: auto;
 }
   
 main {
@@ -9,6 +12,13 @@ main {
 }
   
 footer {
-    padding-top: 0;
+    padding: 0px;
     text-align: right;
+}
+.page-footer {
+    padding: 0px;
+}
+.col.s6 {
+    background-color: white;
+    padding: 10px;
 }

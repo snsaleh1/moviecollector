@@ -18,6 +18,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=100)),
                 ('year', models.IntegerField()),
                 ('rating', models.CharField(max_length=25)),
+                ('description', models.TextField(max_length=300)),
                 ('quote', models.TextField(max_length=250)),
             ],
         ),

@@ -4,7 +4,7 @@ from django.views.generic import ListView, DetailView
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 import boto3
 import uuid
@@ -30,15 +30,15 @@ def signup(request):
     context = {'form': form, 'error_message': error_message}
     return render(request, 'registration/signup.html', context)
 
-class MovieDelete(DeleteView):
+class MovieDelete(LoginRequiredMixin, DeleteView):
     model = Movie
     success_url = '/movies/'
 
-class MovieUpdate(UpdateView):
+class MovieUpdate(LoginRequiredMixin, UpdateView):
     model = Movie
-    fields = ['year', 'rating', 'description' 'quote']
+    fields = ['year', 'rating', 'description', 'quote']
 
-class MovieCreate(CreateView):
+class MovieCreate(LoginRequiredMixin, CreateView):
     model = Movie
     fields = ['name', 'year', 'rating', 'description', 'quote']
     success_url = '/movies/'
@@ -93,25 +93,25 @@ def unassoc_friend(request, movie_id, friend_id):
     return redirect('detail', movie_id=movie_id)
 
 
-class FriendList(ListView):
+class FriendList(LoginRequiredMixin, ListView):
     model = Friend
 
-class FriendDetail(DetailView):
+class FriendDetail(LoginRequiredMixin, DetailView):
     model = Friend
 
-class FriendCreate(CreateView):
+class FriendCreate(LoginRequiredMixin, CreateView):
     model = Friend
     fields = '__all__'
     success_url = '/friends/'
 
 
-class FriendUpdate(UpdateView):
+class FriendUpdate(LoginRequiredMixin, UpdateView):
     model = Friend
     fields = ['name', 'bringing']
     success_url = '/friends/'
 
 
-class FriendDelete(DeleteView):
+class FriendDelete(LoginRequiredMixin, DeleteView):
     model = Friend
     success_url = '/friends/'
 
