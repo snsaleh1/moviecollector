@@ -55,7 +55,8 @@ class Viewing(models.Model):
 movies = [
   Movie('American Gangster', '2007', '5/5', 'You can only be two things in this world. Either you somebody, or you nobody'),
   Movie('Gladiator', '2000', '4.5/5', 'Father to a murdered son, husband to a murdered wife, and I will have my vengeance, in this life or the next'),
-  Movie('Bad Boys II', '2003', '4.5/5', 'We ride together, we die together, bad boys for life')
+  Movie('Bad Boys II', '2003', '4.5/5', 'We ride together, we die together, bad boys for life'),
+  Movie('The Irishman', '2019', '4/5', 'So I heard you paint houses')
 ]
 
 class Photo(models.Model):
